@@ -1,0 +1,29 @@
+{
+  "name": "ep",
+  "version": "0.0.0",
+  "description": "Episode renamer thing.",
+  "author": "Lim Yuan Qing",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yuanqing/ep.git"
+  },
+  "dependencies": {
+    "rename": "^1.0.3",
+    "request": "^2.55.0",
+    "savoy": "^0.3.0",
+    "strfmt": "^0.1.0",
+    "titlecase": "^1.0.2"
+  },
+  "bin": {
+    "ep": "cli.js"
+  },
+  "keywords": [
+    "episode",
+    "episodes",
+    "imdb",
+    "television",
+    "tv"
+  ],
+  "preferGlobal": true
+}
