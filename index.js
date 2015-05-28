@@ -1,7 +1,7 @@
 'use strict';
 
+var fold = require('savoy').fold;
 var fs = require('fs');
-var each = require('savoy').each;
 var path = require('path');
 var rename = require('rename');
 var request = require('request');
@@ -18,14 +18,16 @@ var ep = function(oldPath, cb) {
   } else {
     oldPaths = [oldPath];
   }
-  console.log(oldPaths);
-  each(oldPaths, run, function(err) {
-    cb(err);
+  fold(oldPaths, [], run, function(err, results) {
+    cb(err, results.join('\n'));
   });
 };
 
-var run = function(cb, oldPath) {
+var run = function(cb, acc, oldPath) {
   var query = parseFilename(path.parse(oldPath).base);
+  if (!query.name || query.season === -1 || query.episode === -1) {
+    return cb(null, acc);
+  }
   getEpisodeTitle(query, function(err, title) {
     if (err) {
       return cb(err);
@@ -37,7 +39,8 @@ var run = function(cb, oldPath) {
     };
     var newFile = rename(oldPath, { basename: tmpl(data) });
     fs.rename(oldPath, newFile, function(err) {
-      cb(err);
+      acc.push(oldPath + ' => ' + newFile);
+      cb(err, acc);
     });
   });
 };
@@ -62,7 +65,7 @@ var parseFilename = function(filename) {
     name.push(str);
   }
   return {
-    name: name.join(' '),
+    name: name.join(' ').trim(),
     season: season,
     episode: episode
   };
@@ -72,7 +75,6 @@ var protocol = 'http';
 var host = 'omdbapi.com';
 
 var getEpisodeTitle = function(query, cb) {
-  console.log(query);
   var omdbUrl = url.format({
     protocol: protocol,
     host: host,
